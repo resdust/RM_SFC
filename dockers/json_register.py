@@ -8,7 +8,6 @@ import re
 import logging
 
 def main():
-
     desc = ( 'Send JSON Events' )
     usage = ( '%prog [options]\n'
               '(type %prog -h for details)' )
@@ -85,7 +84,62 @@ def main():
     except socket.error:
         logging.debug ('Failed to create socket')
         sys.exit(1)
-    s.sendto(json.dumps(json_message).encode(), (options.addr, int(options.port)) )
+    s.sendto(json.dumps(json_message).encode(), (options.addr, int(options.port)))
+
+def register(register=None, file=None, event_name=None, addr=None, port=None):
+    # Parsing and processing
+    register_str=None
+
+    if addr is None or port is None:
+        print('No IP address or Port information is given. Exiting.')
+        return
+    elif event_name is None:
+        print('No event name provided. Exiting.')
+        return
+    # Open file if specified
+    elif file and register:
+        print('Can only specify one of (file,register)')
+        return
+
+    elif file:
+        try:
+            fd = open(file, 'r')
+        except IOError as err:
+            logging.info('Error opening file: {}'.format(err))
+            logging.debug('Aborting.\n')
+            sys.exit(1)
+        content = fd.read()
+        register_str = content
+
+    elif register:
+        register_str = register
+
+    if register_str:
+        # Parse register
+        register_dict = dict(
+            vnf_id = None,
+            name=None,
+            type_id=None,
+            group_id=None,
+            geo_location=None,
+            iftype=None,
+            bidirectional=None)
+
+        parse_register_str(register_dict, register_str)
+
+        json_message = dict(name=event_name,
+                            register=register_dict)
+        logging.debug('register:'+str(register_dict))
+    else:
+        json_message = dict(name=event_name)
+    # Create socket
+    # try:
+    #     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # except socket.error:
+    #     logging.debug ('Failed to create socket')
+    #     sys.exit(1)
+    # s.sendto(json.dumps(json_message).encode(), (addr, int(port)))
+    return (json.dumps(json_message).encode(), addr, port)
 
 def parse_register_str(register_dict, register_str):
     m = re.search("name=[\'\"]?([\w._-]+)",register_str)
@@ -117,7 +171,7 @@ def parse_register_str(register_dict, register_str):
     if m:
         register_dict['bidirectional'] = m.group(1)
 
-    print('register dict',register_dict)
+    logging.debug('register dict',register_dict)
 
 if __name__ == '__main__':
     main()

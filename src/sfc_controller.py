@@ -60,7 +60,7 @@ class sfc(AsymLList):
         self.cur.execute('''select vnf_id from service where service_id = ? except select next_vnf_id from service where service_id = ? ''', (self.service_id, self.service_id))
         vnf_id = self.cur.fetchone()[0]
         super().__init__(vnf_id, is_bidirect=True, nodeClass=nodeClass, cur=self.cur)   
-        print('--init vnf_id:',vnf_id)
+        print('--first vnf_id:',vnf_id)
         self.fill()
 
     def __str__(self):
@@ -343,7 +343,6 @@ class sfc_app_cls(app_manager.RyuApp):
                 reg_info = json.loads(reg_string)
                 name = reg_info['register']['name']
                 vnf_id = reg_info['register']['vnf_id']
-                logging.info('VNF ID from reg packet %s', vnf_id)
                 type_id = reg_info['register']['type_id']
                 group_id = reg_info['register']['group_id']
                 geo_location = reg_info['register']['geo_location']
@@ -351,7 +350,6 @@ class sfc_app_cls(app_manager.RyuApp):
                 bidirectional = reg_info['register']['bidirectional']
                 dpid = datapath.id
                 locator_addr = pkt_eth.src
-                logging.info("Inserting self-registartion info into DB")
                 cur.execute('''REPLACE INTO vnf (id, name, type_id,
                            group_id, geo_location, iftype, bidirectional,
                            dpid, in_port, locator_addr  ) VALUES ( ?, ?, ?,
@@ -363,6 +361,10 @@ class sfc_app_cls(app_manager.RyuApp):
                             (name, iftype)
                             )
                 vnf_id = cur.fetchone()[0]
+
+                logging.info('VNF ID from reg packet %s', vnf_id)
+                logging.info("Inserting self-registartion info into DB")
+                logging.info("register info"+str(reg_info))
 
                 conn.commit()
                 #cur.close()
