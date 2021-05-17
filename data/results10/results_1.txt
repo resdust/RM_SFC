@@ -1,0 +1,60 @@
+#Length of function chain: 2
+#Number of flows: 1
+Finding route
+Route
+#Total solution: 2
+#Route solution 0:
+#Flow 1: 
+0->5->2->9
+------
+#Route solution 1:
+#Flow 1: 
+0->8->2->9
+------
+======
+Mapping
+##Route scheme 0
+#Solution count in total: 0
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#Solution count in total: 1
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 2
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+======
+##Route scheme 1
+#Solution count in total: 3
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#Solution count in total: 4
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 5
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+======
+Total route solutions: 2
+Total mapping solutions: 6
+Time of finding routes (first mapping): 0.0625
+Time of function mapping (second mapping): 0.078125
+Total time used: 0.140625

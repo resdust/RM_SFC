@@ -1,0 +1,1 @@
+{name=forwarder1, vnf_id=111, type_id=1, group_id=1, iftype=2, bidirectional=True, geo_location=host2.in.room}

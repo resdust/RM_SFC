@@ -1,0 +1,638 @@
+#Length of function chain: 2
+#Number of flows: 2
+Finding route
+Route
+#Total solution: 4
+#Route solution 0:
+#Flow 1: 
+0->5->2->9
+#Flow 2: 
+1->9->2->5
+------
+#Route solution 1:
+#Flow 1: 
+0->8->2->9
+#Flow 2: 
+1->9->2->5
+------
+#Route solution 2:
+#Flow 1: 
+0->8->2->9
+#Flow 2: 
+1->6->8->2->5
+------
+#Route solution 3:
+#Flow 1: 
+0->5->2->9
+#Flow 2: 
+1->6->8->2->5
+------
+======
+Mapping
+##Route scheme 0
+#Solution count in total: 0
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 9
+------
+#Solution count in total: 1
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->9->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 2
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 2
+------
+#Solution count in total: 3
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 9
+------
+#Solution count in total: 4
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 5
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 6
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 2
+------
+#Solution count in total: 7
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 9
+------
+#Solution count in total: 8
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 2
+------
+======
+##Route scheme 1
+#Solution count in total: 9
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 9
+------
+#Solution count in total: 10
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->9->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 11
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 2
+------
+#Solution count in total: 12
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 9
+------
+#Solution count in total: 13
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 14
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 15
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 2
+------
+#Solution count in total: 16
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 9
+------
+#Solution count in total: 17
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->9->2->5
+function 0 -> node 9
+function 1 -> node 2
+------
+======
+##Route scheme 2
+#Solution count in total: 18
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 6
+------
+#Solution count in total: 19
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 6
+------
+#Solution count in total: 20
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 8
+------
+#Solution count in total: 21
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 8
+------
+#Solution count in total: 22
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 8
+------
+#Solution count in total: 23
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 2
+------
+#Solution count in total: 24
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 25
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 2
+------
+#Solution count in total: 26
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 2
+------
+#Solution count in total: 27
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 28
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 2
+------
+#Solution count in total: 29
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 8
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 2
+------
+#Solution count in total: 30
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 2
+------
+#Solution count in total: 31
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 32
+#flow 0
+0->8->2->9
+function 0 -> node 8
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 8
+------
+#Solution count in total: 33
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 8
+------
+#Solution count in total: 34
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 6
+------
+#Solution count in total: 35
+#flow 0
+0->8->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 8
+------
+======
+##Route scheme 3
+#Solution count in total: 36
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 6
+------
+#Solution count in total: 37
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 6
+------
+#Solution count in total: 38
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 8
+------
+#Solution count in total: 39
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 8
+------
+#Solution count in total: 40
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 8
+------
+#Solution count in total: 41
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 2
+------
+#Solution count in total: 42
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 43
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 2
+------
+#Solution count in total: 44
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 2
+------
+#Solution count in total: 45
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 46
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 2
+------
+#Solution count in total: 47
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 2
+------
+#Solution count in total: 48
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 5
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 2
+------
+#Solution count in total: 49
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 2
+function 1 -> node 2
+------
+#Solution count in total: 50
+#flow 0
+0->5->2->9
+function 0 -> node 5
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 8
+------
+#Solution count in total: 51
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 8
+------
+#Solution count in total: 52
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 6
+function 1 -> node 6
+------
+#Solution count in total: 53
+#flow 0
+0->5->2->9
+function 0 -> node 2
+function 1 -> node 2
+------
+#flow 1
+1->6->8->2->5
+function 0 -> node 8
+function 1 -> node 8
+------
+======
+Total route solutions: 4
+Total mapping solutions: 54
+Time of finding routes (first mapping): 0.09375
+Time of function mapping (second mapping): 0.53125
+Total time used: 0.625
