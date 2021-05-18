@@ -12,7 +12,7 @@ from ryu.lib.packet import ethernet, udp, ipv4, ipv6, arp, icmp
 from webob import Response
 from asymlist import Node, AsymLList
 
-conn = sqlite3.connect('nfv.sqlite')
+conn = sqlite3.connect('data/nfv.sqlite')
 cur = conn.cursor()
 flows = {}
 DELTA = 3000
@@ -63,6 +63,8 @@ class sfc(AsymLList):
         print('--first vnf_id:',vnf_id)
         self.fill()
 
+        self.deployed = False
+
     def __str__(self):
         return str(self.forward())
 
@@ -85,14 +87,14 @@ class sfc(AsymLList):
         actions = []
         flow_id = self.flow_id
         for flow_id in (self.flow_id, self.reverse_flow_id):
-            print('flow_id',flow_id)
+            logging.info('install catching rule flow_id'+str(flow_id))
             for dp in sfc_app_cls.datapaths.values():
-                logging.info('dp:'+str(dp.id))
+                logging.debug('dp:'+str(dp.id))
                 match = sfc_app_cls.create_match(dp.ofproto_parser, self.flows[flow_id])
-                logging.info('goto id=2 when match:')
+                logging.debug('goto id=2 when match:')
                 for k, v in self.flows[flow_id].items():
                     if  v is not None:
-                        print(k,':',v)
+                        logging.debug(str(k)+':'+str(v))
                 sfc_app_cls.add_flow(dp, 1, match, actions, metadata=flow_id, goto_id=2)
             if self.back is None:
                 break
@@ -105,34 +107,43 @@ class sfc(AsymLList):
             match_del = sfc_app_cls.create_match(dp.ofproto_parser, flow_dict)
             sfc_app_cls.del_flow(datapath=dp, match=match_del)
 
-    def install_steering_rule(self, sfc_app_cls, dp_entry, in_port_entry, flow_match):
+    def install_steering_rule(self, sfc_app_cls, dp_entry, in_port_entry, flow_id):
         logging.debug("Adding steering rule...")
         actions = []
         dp = dp_entry
         parser = dp.ofproto_parser
-        flow_dict = self.flows[flow_match]
+        flow_dict = self.flows[flow_id]
         flow_dict['in_port'] = in_port_entry
         match = sfc_app_cls.create_match(parser, flow_dict)
-        if flow_match < DELTA:
+        first = 1
+        if flow_id < DELTA:
             for vnf in self.forward():
+                if first:
+                    first = 0
+                    continue
                 #dpid_out = vnf.dpid_out
                 actions.append(parser.OFPActionSetField(eth_dst=vnf.locator_addr_in)) 
                 sfc_app_cls.add_flow(dp, 8, match, actions, goto_id=1)
-                actions = []
+                print('flow_match<DELTA, dp:',dp.id, 'match:',match, 'actions:',actions)
+
                 flow_dict['in_port'] = vnf.port_out
                 dp = sfc_app_cls.datapaths[vnf.dpid_out] 
                 match = sfc_app_cls.create_match(parser, flow_dict)
-                print('flow_match<DELTA:',flow_dict)
+                actions = []
         else:
             for vnf in self.backward(): 
+                if first:
+                    first = 0
+                    continue
                 #dpid_out = vnf.dpid_out
                 actions.append(parser.OFPActionSetField(eth_dst=vnf.locator_addr_out)) 
                 sfc_app_cls.add_flow(dp, 8, match, actions, goto_id=1)
-                actions = []
+                print('flow_match>=DELTA,  dp:',dp.id, 'match:',match, 'actions:',actions)
+
                 flow_dict['in_port'] = vnf.port_out
                 dp = sfc_app_cls.datapaths[vnf.dpid_out] 
                 match = sfc_app_cls.create_match(parser, flow_dict)
-                print('flow_match>=DELTA:',flow_dict)
+                actions = []
 
 #################################
 
@@ -165,6 +176,7 @@ class SFCController(ControllerBase):
             message = {'Result': 'DB inconsistency'}
             body = json.dumps(message)
             return Response(content_type='application/json', body=body.encode('utf-8'), status=500)
+
         logging.info('SFC: %s', str(flows[flow_id]))
         flows[flow_id].install_catching_rule(sfc_ap)
 
@@ -222,6 +234,7 @@ class sfc_app_cls(app_manager.RyuApp):
         wsgi = kwargs['wsgi']
         wsgi.register(SFCController, {'sfc_api_app': self})
         self.datapaths = {}
+        self.logger.setLevel(logging.INFO)
 
     """ database definition
     #        conn = sqlite3.connect('nfv.sqlite')
@@ -251,7 +264,7 @@ class sfc_app_cls(app_manager.RyuApp):
     #  END of database definition
     """
 
-######### Register/Unregister DataPathes in datapth dictionary
+######### Register/Unregister DataPathes in datapths dictionary
     @set_ev_cls(ofp_event.EventOFPStateChange,
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
     def _state_change_handler(self, ev):
@@ -281,16 +294,18 @@ class sfc_app_cls(app_manager.RyuApp):
         match = parser.OFPMatch()
         actions = []
         self.add_flow(datapath, 0, match, actions, goto_id=1)
-        actions = [parser.OFPActionOutput(ofproto.OFPP_NORMAL,
-                                          ofproto.OFPCML_NO_BUFFER)]
+        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, # change from OFPP_NORMAL to OFPP_CONTROLLER
+                                          ofproto.OFPCML_NO_BUFFER)] 
+                                          #Process with normal L2/L3 switching performed by the datapath. (OFPP_NORMAL)
         self.add_flow(datapath, 0, match, actions, table_id=1)
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
-                                          ofproto.OFPCML_NO_BUFFER)]
+                                          ofproto.OFPCML_NO_BUFFER)] 
+                                          #Send to the controller, in an OFPT_PACKET_IN, as received by a controller in the handle_packet_in() callback.
         self.add_flow(datapath, 0, match, actions, table_id=2)
 ############### Packet_IN handler ####################
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-        print('in patcket handler')
+        self.logger.debug('in patcket handler')
         self.logPacket(ev)
         msg = ev.msg
         datapath = msg.datapath
@@ -309,24 +324,27 @@ class sfc_app_cls(app_manager.RyuApp):
                           msg.buffer_id, msg.total_len, reason,
                           msg.table_id, msg.cookie, msg.match)
         try:
-            flow_match = msg.match['metadata']
+            flow_match_id = msg.match['metadata']
             if msg.match['metadata'] > DELTA:
-                flow_id = flow_match - DELTA
+                flow_id = flow_match_id - DELTA
             else:
-                flow_id = flow_match
+                flow_id = flow_match_id
             in_port_entry = msg.match['in_port']
             dp_entry = datapath
 
-####### Deleting catching rules
-            logging.info('Deleting catching rules - flow:%d match:%d ...', flow_id, flow_match)
-            flows[str(flow_id)].delete_rule(self, flow_match)
+            if flows[str(flow_id)].deployed == False:
+                ####### Deleting catching rules
+                logging.info('Deleting catching rules - flow:%d match:%d ...', flow_id, flow_match_id)
+                flows[str(flow_id)].delete_rule(self, flow_match_id)
 
-####### Installing steering rules 
-            logging.info('Installing steering rules - flow:%d match:%d ...', flow_id, flow_match)
-            flows[str(flow_id)].install_steering_rule(self, dp_entry, in_port_entry, flow_match)
+                ####### Installing steering rules 
+                logging.info('Installing steering rules - flow:%d match:%d ...', flow_id, flow_match_id)
+                flows[str(flow_id)].install_steering_rule(self, dp_entry, in_port_entry, flow_match_id)
+
+                flows[str(flow_id)].deployed = True
             
         except KeyError:
-            flow_match = None
+            flow_match_id = None
             pass
 
 ####### VNF self registrtation
@@ -341,6 +359,7 @@ class sfc_app_cls(app_manager.RyuApp):
             if pkt_udp.dst_port == 30012:
                 reg_string = pkt.protocols[-1]
                 reg_info = json.loads(reg_string)
+
                 name = reg_info['register']['name']
                 vnf_id = reg_info['register']['vnf_id']
                 type_id = reg_info['register']['type_id']
@@ -350,21 +369,23 @@ class sfc_app_cls(app_manager.RyuApp):
                 bidirectional = reg_info['register']['bidirectional']
                 dpid = datapath.id
                 locator_addr = pkt_eth.src
-                cur.execute('''REPLACE INTO vnf (id, name, type_id,
+                cur.execute('''INSERT OR IGNORE INTO vnf (id, name, type_id,
                            group_id, geo_location, iftype, bidirectional,
                            dpid, in_port, locator_addr  ) VALUES ( ?, ?, ?,
-                           ?, ?, ?, ?, ?, ?, ? )''', 
+                           ?, ?, ?, ?, ?, ?, ? )''',  # if exist then ignore, ensure the dpid is the first switch
                             (vnf_id, name, type_id, group_id, geo_location,
                              iftype, bidirectional, dpid, in_port, locator_addr)
                            )
-                cur.execute('SELECT id FROM vnf WHERE name = ? AND  iftype = ?',
-                            (name, iftype)
+                cur.execute('SELECT id FROM vnf WHERE name = ? AND  iftype = ? AND dpid = ?',
+                            (name, iftype, dpid)
                             )
-                vnf_id = cur.fetchone()[0]
-
-                logging.info('VNF ID from reg packet %s', vnf_id)
-                logging.info("Inserting self-registartion info into DB")
-                logging.info("register info"+str(reg_info))
+                try:
+                    vnf_id = cur.fetchone()[0]
+                    logging.info('reg VNF ID {} from  dpid {}'.format(vnf_id, dpid))
+                except:
+                    pass
+                logging.debug("Inserting self-registartion info into DB")
+                logging.debug("register info"+str(reg_info))
 
                 conn.commit()
                 #cur.close()
@@ -436,24 +457,44 @@ class sfc_app_cls(app_manager.RyuApp):
         msg = ev.msg
         datapath = msg.datapath
         dpid = datapath.id
-        # ofproto = datapath.ofproto
-        # parser = datapath.ofproto_parser
-        in_port = msg.match['in_port']
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        dpid = datapath.id
 
         pkt = packet.Packet(msg.data)
+        eth = pkt.get_protocol(ethernet.ethernet)
+
+        eth_dst = eth.dst
+        eth_src = eth.src
+
+
+        in_port = msg.match['in_port']
+
         # arp_pkt = pkt.get_protocol(arp.arp)
         ipv4_pkt = pkt.get_protocol(ipv4.ipv4)
         icmp_pkt = pkt.get_protocol(icmp.icmp)
+        udp_pkt = pkt.get_protocol(udp.udp)
 
+        self.logger.debug(str(pkt))
+
+        if ipv4_pkt or icmp_pkt or udp_pkt:
+            self.logger.info('---')
+            self.logger.info('--eth src: %s -> eth dst: %s' % (eth_src,eth_dst) )
+    
         if ipv4_pkt:    # 如果是IPv4数据包
             ipv4_src = ipv4_pkt.src
             ipv4_dst = ipv4_pkt.dst
 
-            self.logger.info('--iPv4 Packet %s : %s -> %s (s%s)' % (ipv4_src, in_port, ipv4_dst, dpid))
+            self.logger.info('--iPv4 Packet %s -> %s (s%s:%s)' % (ipv4_src, ipv4_dst, dpid, in_port))
 
         if icmp_pkt:    # 如果是ICMP数据包
-            
-            self.logger.info('--icmp Packet x.x.x.x : %s -> x.x.x.x (s%s)' % ( in_port, dpid))
+            # icmp_pkt.eth_src
+            self.logger.info('--icmp Packet (s%s)' % ( dpid))
+            self.logger.info("%r",(icmp_pkt))
+
+        if udp_pkt:
+            self.logger.info('--UDP packet port %s -> %s' % (udp_pkt.src_port, udp_pkt.dst_port))
+            # self.logger.info('  packet data: %s' %udp_pkt)
 
 
             # if ipv4_src in self.virtualip:
@@ -480,3 +521,15 @@ class sfc_app_cls(app_manager.RyuApp):
 
             # print('iPv4 Packet %s -> %s : port %s' % (path[index], path[index + 1], out_port))
             # print('--------------------------------------')
+
+        # self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
+
+        actions = [parser.OFPActionOutput(ofproto.OFPP_NORMAL)]
+
+        data = None
+        if msg.buffer_id == ofproto.OFP_NO_BUFFER:
+            data = msg.data
+
+        out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
+                                  in_port=in_port, actions=actions, data=data)
+        datapath.send_msg(out)
