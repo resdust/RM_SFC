@@ -5,20 +5,20 @@ Route
 #Total solution: 1
 #Route solution 0:
 #Flow 1: 
-3->2->9->6->0
+3->2->8->4
 ------
 ======
 Mapping
 ##Route scheme 0
 #Solution count in total: 0
 #flow 0
-3->2->9->6->0
+3->2->9->7->0
 function 0 -> node 2
 function 1 -> node 2
 ------
 #Solution count in total: 1
 #flow 0
-3->2->9->6->0
+3->2->9->7->0
 function 0 -> node 2
 function 1 -> node 9
 ------
