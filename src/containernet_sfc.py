@@ -19,12 +19,17 @@ def setLinks(net,links):
         s2 = int(link[1])
         try:
             net.addLink(net.switches[s1],net.switches[s2])
-            # print(link)
+            print(link)
+        # s1 = 'h'+str(int(link[0])+1)
+        # s2 = 'h'+str(int(link[1])+1)
+        # try:
+        #     net.addLink(net.getNodeByName(s1),net,getNodeByName(s2))
         except:
+            print('failed to add',link)
             pass
 
 def topology(file='data/network_10.txt'):
-    desc = ( 'Create a homogeneous virtual network with -n [N] nodes, default is 6.' )
+    desc = ( 'Create a homogeneous virtual network with -n [N] nodes, default is 10.' )
     usage = ( 'sudo python containernet_sfc.py -n [number of nodes]\n')
     op = OptionParser( description=desc, usage=usage )
 
@@ -77,28 +82,19 @@ def topology(file='data/network_10.txt'):
         net.addLink(vars()['s'+str(n)], vars()['h'+str(n)]) # connect switch and its host
     # print(net.switches)
     setLinks(net,links)
+    # net.addLink(vars()['s1'], vars()['s2'])
+    # net.addLink(vars()['s2'], vars()['s3'])
+    # net.addLink(vars()['s1'], vars()['s10'])
+    # net.addLink(vars()['s2'],vars()['s6'])
+    # net.addLink(vars()['s4'],vars()['s1'])
         # if i != 0:
         #     net.addLink(vars()['s'+str(i)], vars()['s'+str(n)]) # switches connect to each other
-        
-    # h1.cmd('ifconfig h2-eth1 10.0.0.12 netmask 255.255.255.0')
-    # h2.cmd('ifconfig h2-eth1 10.0.0.12 netmask 255.255.255.0')
-    # h3.cmd('ifconfig h3-eth1 10.0.0.13 netmask 255.255.255.0')
-
 
     print ("*** Starting network")
 
     net.build()
-    # h2.cmd('ip route add 10.0.0.1/32 dev h2-eth0; ip route add 10.0.0.5/32 dev h2-eth1')
     # h2.cmd('ip route add 10.0.0.253/32 dev h2-eth0; ip route add 10.0.0.254/32 dev h2-eth1')
     # h2.cmd('sudo arp -i h2-eth0 -s 10.0.0.253 01:02:03:04:05:06')
-    # h2.cmd('sudo arp -i h2-eth1 -s 10.0.0.254 11:12:13:14:15:16')
-    
-    # h3.cmd('ip route add 10.0.0.1/32 dev h3-eth0; ip route add 10.0.0.5/32 dev h3-eth1')
-    # h3.cmd('ip route add 10.0.0.253/32 dev h3-eth0; ip route add 10.0.0.254/32 dev h3-eth1')
-    # h3.cmd('sudo arp -i h3-eth0 -s 10.0.0.253 01:02:03:04:05:06')
-    # h3.cmd('sudo arp -i h3-eth1 -s 10.0.0.254 11:12:13:14:15:16')
-
-    # h5.cmd('sudo arp -i h5-eth0 -s 10.0.0.253 01:02:03:04:05:06')
     for i in range(N):
         n = i+1
         name = 'h'+str(n)
@@ -112,14 +108,16 @@ def topology(file='data/network_10.txt'):
         name = 's'+str(n)
         vars()[name].start([c7])
 
-    for i in range(N):
+    ### Sqlite already have the vnf information. Quote to reduce traffic
+    """for i in range(N):
         n = i+1
         name = 'h'+str(n)
         reg_str = '\"{{name=vnf{}, vnf_id={}, type_id=1, group_id=1, iftype=3, bidirectional=False, geo_location=host{}.new.room}}\"'.format(n,n,n)
-        vars()[name].cmd('src/json_register.py --reg='+reg_str) #+' -a 10.0.0.253 -p 30012 -n registration')
+        vars()[name].cmd('src/json_register.py --reg='+reg_str) #+' -a 10.0.0.253 -p 30012 -n registration')"""
 
     print("*** Installing default SFC")
     os.system('curl -v http://127.0.0.1:8080/add_flow/1')
+    vars()['h1'].cmd('ping h10')
 
     print("*** Running CLI")
     CLI( net )

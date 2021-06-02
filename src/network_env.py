@@ -23,7 +23,6 @@ class Env(tk.Tk, object):
         self.posibility_list = [0 for i in range(100)]
         self.temp_posibility_list = [0 for i in range(100)]
         self.degree_change_list = [0 for i in range(100)]
-        flag = 0
         for i in range(self.state_size):
             self.state.append([i, 0, 0])  # [服务编号，状态，状态保持时间]
 
@@ -153,12 +152,9 @@ class Env(tk.Tk, object):
         for t in attack_nodes:
             if t in self.action_set[action_value]:
                 hit += 1
-            #     reward = 0
-            # else:
-            #     reward = 10
 
         reward = 1 - hit/len(self.action_set[action_value])
-        suc_rate = reward
+        # suc_rate = reward
 
         ### selected wrong action set with incorrect number of req
         no_last = 0
@@ -171,27 +167,6 @@ class Env(tk.Tk, object):
                     reward = zero
                 break
             no_begin = no_last
-
-        # if state == 0 and action_value > 37:
-        #         reward = zero
-        # elif state == 1:
-        #     if action_value < 38 or action_value > 81:
-        #         reward = zero
-        # elif state == 2:
-        #     if action_value < 82 or action_value > 117:
-        #         reward = zero
-        # elif state == 3:
-        #     if action_value < 118 or action_value > 167:
-        #         reward = zero
-        # elif state == 4:
-        #     if action_value < 168 or action_value > 217:
-        #         reward = zero
-        # elif state == 5:
-        #     if action_value < 218 or action_value > 267:
-        #         reward = zero
-        # elif state == 6:
-        #     if action_value < 268:
-        #         reward = zero
 
         ### update state
         state_, state_num_ = self.RequestArrive()

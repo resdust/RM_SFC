@@ -90,6 +90,7 @@ class sfc(AsymLList):
             logging.info('install catching rule flow_id'+str(flow_id))
             for dp in sfc_app_cls.datapaths.values():
                 logging.debug('dp:'+str(dp.id))
+                # print("match",self.flows[flow_id])
                 match = sfc_app_cls.create_match(dp.ofproto_parser, self.flows[flow_id])
                 logging.debug('goto id=2 when match:')
                 for k, v in self.flows[flow_id].items():
@@ -473,13 +474,18 @@ class sfc_app_cls(app_manager.RyuApp):
         # arp_pkt = pkt.get_protocol(arp.arp)
         ipv4_pkt = pkt.get_protocol(ipv4.ipv4)
         icmp_pkt = pkt.get_protocol(icmp.icmp)
+        # icmp_pkt = None
         udp_pkt = pkt.get_protocol(udp.udp)
+        try:
+            flow_id = msg.match['metadata']
+        except:
+            flow_id = None
 
         self.logger.debug(str(pkt))
 
-        if ipv4_pkt or icmp_pkt or udp_pkt:
+        if ipv4_pkt or icmp_pkt or flow_id:
             self.logger.info('---')
-            self.logger.info('--eth src: %s -> eth dst: %s' % (eth_src,eth_dst) )
+            self.logger.info('--eth src: %s -> eth dst: %s (s%s)' % (eth_src,eth_dst,dpid) )
     
         if ipv4_pkt:    # 如果是IPv4数据包
             ipv4_src = ipv4_pkt.src
@@ -487,14 +493,17 @@ class sfc_app_cls(app_manager.RyuApp):
 
             self.logger.info('--iPv4 Packet %s -> %s (s%s:%s)' % (ipv4_src, ipv4_dst, dpid, in_port))
 
-        if icmp_pkt:    # 如果是ICMP数据包
-            # icmp_pkt.eth_src
-            self.logger.info('--icmp Packet (s%s)' % ( dpid))
-            self.logger.info("%r",(icmp_pkt))
+        if flow_id:
+            self.logger.info('--flow ID %s' %(flow_id))
 
-        if udp_pkt:
-            self.logger.info('--UDP packet port %s -> %s' % (udp_pkt.src_port, udp_pkt.dst_port))
-            # self.logger.info('  packet data: %s' %udp_pkt)
+            if icmp_pkt:    # 如果是ICMP数据包
+                # icmp_pkt.eth_src
+                self.logger.info('--icmp Packet (s%s)' % ( dpid))
+                self.logger.info("%r",(icmp_pkt))
+
+            if udp_pkt:
+                self.logger.info('--UDP packet port %s -> %s' % (udp_pkt.src_port, udp_pkt.dst_port))
+                # self.logger.info('  packet data: %s' %udp_pkt)
 
 
             # if ipv4_src in self.virtualip:
